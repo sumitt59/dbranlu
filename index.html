@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            margin: 20px;
+        }
+        .post {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .post h2 {
+            margin-top: 0;
+        }
+        .post p {
+            margin-top: 5px;
+        }
+        #newPostForm {
+            margin-bottom: 20px;
+        }
+        #newPostForm input[type="text"], #newPostForm textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+        #newPostForm button {
+            padding: 5px 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Simple Blog</h1>
+    </header>
+    <main>
+        <form id="newPostForm">
+            <input type="text" id="title" placeholder="Enter title">
+            <textarea id="content" placeholder="Enter content"></textarea>
+            <button type="button" onclick="addPost()">Add Post</button>
+        </form>
+        <div id="posts"></div>
+    </main>
+
+    <script>
+        function addPost() {
+            var title = document.getElementById("title").value;
+            var content = document.getElementById("content").value;
+            var postsDiv = document.getElementById("posts");
+
+            var postDiv = document.createElement("div");
+            postDiv.className = "post";
+            postDiv.innerHTML = "<h2>" + title + "</h2><p>" + content + "</p>";
+
+            postsDiv.appendChild(postDiv);
+
+            document.getElementById("title").value = "";
+            document.getElementById("content").value = "";
+        }
+    </script>
+</body>
+</html>
