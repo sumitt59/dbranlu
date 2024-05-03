@@ -23,12 +23,23 @@
             margin-bottom: 20px;
             border-bottom: 1px solid #ddd;
             padding-bottom: 20px;
+            position: relative;
         }
         .post h2 {
             margin-top: 0;
         }
         .post p {
             margin-top: 5px;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
         #newPostForm {
             margin-bottom: 20px;
@@ -45,13 +56,28 @@
             border: none;
             cursor: pointer;
         }
+        #loginForm {
+            text-align: center;
+            margin-top: 50px;
+        }
+        #loginForm input[type="text"], #loginForm input[type="password"], #loginForm button {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
-    <header>
+    <div id="loginForm">
+        <input type="text" id="username" placeholder="Enter username">
+        <input type="password" id="password" placeholder="Enter password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <header style="display: none;">
         <h1>Simple Blog</h1>
+        <button onclick="logout()">Logout</button>
     </header>
-    <main>
+    <main style="display: none;">
         <form id="newPostForm">
             <input type="text" id="title" placeholder="Enter title">
             <textarea id="content" placeholder="Enter content"></textarea>
@@ -61,19 +87,91 @@
     </main>
 
     <script>
+        var loggedIn = false;
+        var currentUser = null;
+
+        // Check if there are stored posts in localStorage
+        var storedPosts = localStorage.getItem('posts');
+        var posts = storedPosts ? JSON.parse(storedPosts) : [];
+
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Simulate authentication (hardcoded username and password)
+            if (username === "admin" && password === "password") {
+                loggedIn = true;
+                currentUser = username;
+                document.getElementById("loginForm").style.display = "none";
+                document.querySelector("header").style.display = "block";
+                document.querySelector("main").style.display = "block";
+                loadPosts();
+            } else if (username === "user" && password === "password") {
+                loggedIn = true;
+                currentUser = username;
+                document.getElementById("loginForm").style.display = "none";
+                document.querySelector("header").style.display = "block";
+                document.querySelector("main").style.display = "block";
+                loadPosts();
+            } else {
+                alert("Incorrect username or password");
+            }
+        }
+
+        function loadPosts() {
+            var postsDiv = document.getElementById("posts");
+            postsDiv.innerHTML = "";
+            posts.forEach(function(post) {
+                var postDiv = document.createElement("div");
+                postDiv.className = "post";
+                postDiv.innerHTML = "<h2>" + post.title + "</h2><p>" + post.content + "</p>";
+
+                if (loggedIn) {
+                    var deleteButton = document.createElement("button");
+                    deleteButton.className = "delete-btn";
+                    deleteButton.innerHTML = "Delete";
+                    deleteButton.onclick = function() {
+                        // Remove the post when the delete button is clicked
+                        posts = posts.filter(function(p) {
+                            return p.title !== post.title && p.content !== post.content;
+                        });
+                        localStorage.setItem('posts', JSON.stringify(posts));
+                        loadPosts();
+                    };
+                    postDiv.appendChild(deleteButton);
+                }
+
+                postsDiv.appendChild(postDiv);
+            });
+        }
+
         function addPost() {
+            if (!loggedIn) {
+                alert("Please login to add a post.");
+                return;
+            }
             var title = document.getElementById("title").value;
             var content = document.getElementById("content").value;
-            var postsDiv = document.getElementById("posts");
 
-            var postDiv = document.createElement("div");
-            postDiv.className = "post";
-            postDiv.innerHTML = "<h2>" + title + "</h2><p>" + content + "</p>";
+            // Add the new post to the posts array
+            posts.push({ title: title, content: content });
+            // Store the updated posts array in localStorage
+            localStorage.setItem('posts', JSON.stringify(posts));
 
-            postsDiv.appendChild(postDiv);
+            // Reload the posts
+            loadPosts();
 
             document.getElementById("title").value = "";
             document.getElementById("content").value = "";
+        }
+
+
+        function logout() {
+            loggedIn = false;
+            currentUser = null;
+            document.getElementById("loginForm").style.display = "block";
+            document.querySelector("header").style.display = "none";
+            document.querySelector("main").style.display = "none";
         }
     </script>
 </body>
